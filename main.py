@@ -8,7 +8,7 @@ st.set_page_config(
 )
 
 if 'user_input' not in st.session_state:
-    st.session_state['user_input'] = {'run_name': str, 'run_directory': str, 'run_notes': str, 'hours_till_finish': float, 'imaging_interval': float, 'imaging_time_lst': list}
+    st.session_state['user_input'] = {'run_name': str, 'run_directory': str, 'run_notes': str, 'hours_till_finish': float, 'number_time_points': int, 'imaging_interval': float, 'imaging_time_lst': list}
 
 set_up = st.Page("pages/set_up.py", title="Set up run", default=True)
 timelapse = st.Page("pages/timelapse.py",  title="Timelapse")

@@ -5,6 +5,8 @@ import time
 from pathlib import Path
 from PIL import Image
 from datetime import datetime, timedelta
+from ..file_management import uniquify_dir, mk_project_dir, mk_project_img_dir, mk_project_vid_dir
+from ..image_video import image_at_time
 
 run_name = st.session_state.user_input['run_name']
 run_notes = st.session_state.user_input['run_notes']
@@ -15,6 +17,10 @@ run_directory = st.session_state.user_input['run_directory']
 
 timelapse_running = st.session_state['timelapse_running']
 timelapse_running = True
+
+run_directory = mk_project_dir(f'{run_directory}/{run_name}')
+img_directory = mk_project_img_dir(run_directory)
+vid_directory = mk_project_vid_dir(run_directory)
 
 # sidebar
 with st.sidebar:
@@ -30,8 +36,6 @@ if run_name == "":
         st.page_link("pages/set_up.py", label="Set up run", icon=":material/description:")
     
     run_input_error()
-
-Path(f"{run_directory}/{run_name}/images").mkdir(parents=True, exist_ok=True)
 
 # layout
 st.title('Timelapse')
@@ -65,7 +69,7 @@ for hr_time in imaging_time_lst:
     current_time = datetime.now().strftime('%H:%M:%S')
     upcoming_time = (datetime.now() + timedelta(hours=imaging_interval)).strftime('%H:%M:%S')
 
-    my_bar.progress(hr_time/hrs_till_finish, text="Progress")
+    my_bar.progress(hr_time/(hrs_till_finish+hr_time), text="Progress")
     with last_taken_container:
         st.metric(
             label="Image last taken at",
@@ -78,15 +82,17 @@ for hr_time in imaging_time_lst:
             value=f'{upcoming_time}'
         )
 
-    with open(f'{run_directory}/{run_name}/images/{run_name}_{hr_time}hrs.txt', 'w') as f:
+    with open(f'{img_directory}/{run_name}_{hr_time}hrs.txt', 'w') as f:
         f.write(f"Image created at {hr_time} hrs for run_name.")
+
+    image_at_time(img_directory, run_name, hr_time)
 
     preview_image_i = Image.open("bacteria.jpeg")
 
     with preview_image:
         preview_image = st.image(preview_image_i, use_container_width=True,caption=f"Previous image for {run_name}.")
 
-    time.sleep(imaging_interval*60**2)
+    time.sleep(imaging_interval*60**2) # sleep for interval (hrs converted to secs)
 
 time.sleep(1)
 
