@@ -36,13 +36,30 @@ imaging_interval = st.session_state.user_input['imaging_interval']
 
 st.write(f"{run_name} will finish in {round(hrs_till_finish, 3)} hrs and take {number_time_points} images (an image every {imaging_interval} hrs).")
 
-if len(imaging_time_lst) < 25:
+if len(imaging_time_lst) < 26:
     fig = go.Figure()
     fig.add_trace(go.Scatter(
         x=imaging_time_lst,
         y=np.zeros(len(imaging_time_lst)),
         mode="lines+markers+text",
-        text=[f"{t} hrs" for t in imaging_time_lst],
+        text=[f"{round(t, 3)} hrs" for t in imaging_time_lst],
+        textposition="top center",
+        marker=dict(size=12,line_color="midnightblue",color="lightskyblue")
+    ))
+    fig.update_layout(
+        height=100,
+        showlegend=False,
+        margin=dict(l=20, r=20, t=0, b=0),
+        xaxis=dict(visible=False),
+        yaxis=dict(visible=False),
+    )
+elif len(imaging_time_lst) < 51:
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=imaging_time_lst,
+        y=np.zeros(len(imaging_time_lst)),
+        mode="lines+markers+text",
+        text=[f"{round(t, 3)} hrs" for t in imaging_time_lst::2],
         textposition="top center",
         marker=dict(size=12,line_color="midnightblue",color="lightskyblue")
     ))
